@@ -1,0 +1,8 @@
+*.pyc
+*~
+local_settings.py
+sqlite
+bin/
+include/
+lib/
+lib64
