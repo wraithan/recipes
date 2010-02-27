@@ -8,8 +8,16 @@ from django.template import RequestContext
 from recipes.main.forms import RecipeForm
 
 
+def recipe_index(request):
+    return render_to_response('main/recipe_index.html', {'title': "nyi"},
+                              context_instance=RequestContext(request))
+
+def recipe_view(request):
+    return render_to_response('main/recipe_view.html', {'title': "nyi"},
+                              context_instance=RequestContext(request))
+
 @login_required
-def add_recipe(request):
+def recipe_add(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST)
         if form.is_valid():
@@ -19,5 +27,5 @@ def add_recipe(request):
             return HttpResponseRedirect(reverse('recipe-view'))
     else:
         form = RecipeForm()
-    return render_to_response('main/add_recipe.html', {'form':form}
+    return render_to_response('main/recipe_add.html', {'form':form},
                               context_instance=RequestContext(request))
