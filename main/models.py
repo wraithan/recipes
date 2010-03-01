@@ -34,4 +34,4 @@ class Recipe(models.Model):
         if not self.id:
             self.slug = slugify(self.name)
 
-        super(test, self).save(*args, **kwargs)
+        super(Recipe, self).save(*args, **kwargs)

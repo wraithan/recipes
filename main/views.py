@@ -3,18 +3,21 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from recipes.main.forms import RecipeForm, IngredientFormSet, CategoryFormSet
+from recipes.main.models import Recipe
 
 
 def recipe_index(request):
-    return render_to_response('main/recipe_index.html', {'title': "nyi"},
+    return render_to_response('main/recipe_index.html', {'title': 'nyi'},
                               context_instance=RequestContext(request))
 
-def recipe_view(request):
-    return render_to_response('main/recipe_view.html', {'title': "nyi"},
+def recipe_view(request, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    return render_to_response('main/recipe_view.html', {'title': recipe.name,
+                                                        'recipe': recipe},
                               context_instance=RequestContext(request))
 
 @login_required
@@ -35,13 +38,16 @@ def recipe_add(request):
             category_object_list = category_formset.save()
         
             recipe_object = recipe_form.save(commit=False)
-            recipe_object.user = request.user
-            recipe_object.ingredients = ingredient_object_list
-            recipe_object.category = category_object_list
+            recipe_object.submitter = request.user
             recipe_object.save()
-            return HttpResponseRedirect(reverse('recipe-view'))
+            for ingredient_object in ingredient_object_list:
+                recipe_object.ingredients.add(ingredient_object)
+            for category_object in category_object_list:
+                recipe_object.categories.add(category_object)
+
+            return HttpResponseRedirect(reverse('recipe-view', kwargs={'recipe_id': recipe_object.id}))
     else:
-        ingredient_formset = IngredientFormSet(prefix="ingredients")
+        ingredient_formset = IngredientFormSet(prefix="ingredient")
         category_formset = CategoryFormSet(prefix="category")
         recipe_form = RecipeForm()
     return render_to_response('main/recipe_add.html',

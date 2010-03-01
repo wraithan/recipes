@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-nyi
+<p>{{ recipe.author }}</p>
+<p>{{ recipe.submitter }}</p>
+<ul>
+{% for ingredient in recipe.ingredients.all %}
+<li>{{ ingredient.data }}{% if ingredient.optional %}(optional){% endif %}</li>
+{% endfor %}
+</ul>
+<p>{{ recipe.instructions }}</p>
+<ul>
+{% for category in recipe.categories.all %}
+<li>{{ category.name }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
